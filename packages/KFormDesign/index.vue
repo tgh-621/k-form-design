@@ -114,7 +114,7 @@
             :data="data"
             :selectItem="selectItem"
             :noModel="noModel"
-            :customModel="customModel"
+            :hideModel="hideModel"
             :startType="startType"
             ref="KFCP"
             @handleSetSelectItem="handleSetSelectItem"
@@ -137,7 +137,7 @@
             :class="{ 'show-properties': showPropertie }"
             class="form-item-properties"
             :selectItem="selectItem"
-            :customModel="customModel"
+            :hideModel="hideModel"
             @handleHide="showPropertie = false"
           />
         </aside>
@@ -234,9 +234,10 @@ export default {
         "table"
       ]
     },
-    customModel: { // 自定义数据字段
+    hideModel: {
+      // 隐藏数据字段
       type: Boolean,
-      default: true
+      default: false
     }
   },
   data() {
@@ -363,6 +364,7 @@ export default {
     handleOpenImportJsonModal() {
       // 打开json预览模态框
       this.$refs.importJsonModal.jsonData = this.data;
+      this.$refs.importJsonModal.handleSetSelectItem = this.handleSetSelectItem;
       this.$refs.importJsonModal.visible = true;
     },
     handlePreview() {
@@ -409,9 +411,12 @@ export default {
           return false;
         } else {
           this.data = data;
+          // 导入json数据后，需要清除已选择key
+          this.handleSetSelectItem({ key: "" });
         }
         return true;
-      } catch {
+      } catch (error) {
+        console.error(error);
         return false;
       }
     },
